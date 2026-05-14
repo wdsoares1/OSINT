@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #0a0e13;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Scrollbar customizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1c2025;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* Animações táticas */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.8);
+  }
+}
+
+.tactical-pulse {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Utilitários customizados */
+.tactical-border {
+  border: 1px solid rgba(37, 99, 235, 0.3);
+}
+
+.tactical-bg {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(10, 14, 19, 0.9) 100%);
+}
