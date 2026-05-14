@@ -3,6 +3,7 @@ NOXIS Intelligence - Social Media Scraper
 Monitora menções em redes sociais abertas (Surface Web).
 """
 import asyncio
+import urllib.parse
 from typing import Dict, List, Any, Optional
 from app.scrapers.base_scraper import BaseScraper
 
