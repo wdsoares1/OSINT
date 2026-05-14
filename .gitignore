@@ -1,45 +1,35 @@
 ```
-# Dependencies
-node_modules/
-.venv/
-venv/
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Environment variables
-.env
-.env.local
-.env.*
-
-# Build outputs
-dist/
-build/
-target/
-
-# Logs
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
 *.log
-
-# IDE files
-.vscode/
-.idea/
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.so
+.MF
+tags
+TAGS
+*.tmproj
 *.swp
 *.swo
-
-# OS files
+*~
 .DS_Store
 Thumbs.db
-
-# Python specific
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-coverage/
-htmlcov/
-.coverage
-.mypy_cache/
-.pytest_cache/
 ```

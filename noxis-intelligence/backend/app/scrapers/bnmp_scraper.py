@@ -3,6 +3,7 @@ NOXIS Intelligence - BNMP Scraper (Banco Nacional de Mandados de Prisão)
 Consulta o sistema do CNJ para verificar existência de mandados de prisão.
 """
 import re
+import urllib.parse
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from app.scrapers.base_scraper import BaseScraper

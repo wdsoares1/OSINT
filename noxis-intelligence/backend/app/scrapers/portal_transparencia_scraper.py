@@ -3,7 +3,9 @@ NOXIS Intelligence - Portal da Transparência Scraper
 Consulta dados abertos do Portal da Transparência do Governo Federal.
 """
 import asyncio
+import urllib.parse
 from typing import Dict, List, Any, Optional
+import aiohttp
 from app.scrapers.base_scraper import BaseScraper
 
 

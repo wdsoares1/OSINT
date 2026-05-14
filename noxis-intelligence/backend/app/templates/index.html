@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOXIS Intelligence - Plataforma OSINT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0a0e13;
+            --bg-card: #1c2025;
+            --bg-input: #0f172a;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border-color: #374151;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .input-field {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .risk-critical { background: var(--danger); color: white; }
+        .risk-high { background: #ea580c; color: white; }
+        .risk-medium { background: var(--warning); color: black; }
+        .risk-low { background: var(--success); color: white; }
+        .risk-unknown { background: var(--border-color); color: var(--text-secondary); }
+        
+        .finding-card {
+            background: var(--bg-input);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .finding-card.critical { border-left-color: var(--danger); }
+        .finding-card.high { border-left-color: #ea580c; }
+        .finding-card.medium { border-left-color: var(--warning); }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .graph-container {
+            background: var(--bg-input);
+            border-radius: 8px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-radius: 6px;
+            margin: 0.25rem 0.5rem;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(37, 99, 235, 0.2);
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+                🔍 NOXIS
+                <span class="text-xs text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded">Intelligence</span>
+            </h1>
+            <p class="text-xs text-gray-500 mt-1">Plataforma OSINT v1.0.0</p>
+        </div>
+        
+        <nav class="p-4">
+            <a href="#" class="nav-item active">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>🔍</span>
+                <span>Nova Busca</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>📁</span>
+                <span>Investigações</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>👥</span>
+                <span>Entidades</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>🕸️</span>
+                <span>Grafos</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>📋</span>
+                <span>Relatórios</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>⚙️</span>
+                <span>Configurações</span>
+            </a>
+        </nav>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                    O
+                </div>
+                <div>
+                    <p class="text-sm text-white">Operador</p>
+                    <p class="text-xs text-gray-500">ID: OP-001</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="mb-8">
+            <h2 class="text-2xl font-bold text-white mb-2">Busca OSINT Inteligente</h2>
+            <p class="text-gray-400">Consulte múltiplas fontes de dados simultaneamente</p>
+        </header>
+        
+        <!-- Search Form -->
+        <div class="card p-6 mb-8">
+            <form id="searchForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm text-gray-400 mb-2">Identificador</label>
+                        <input 
+                            type="text" 
+                            id="queryInput"
+                            class="input-field"
+                            placeholder="CPF, Nome ou CNPJ"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
+                        <select id="queryType" class="input-field">
+                            <option value="AUTO">Automático</option>
+                            <option value="CPF">CPF</option>
+                            <option value="NOME">Nome</option>
+                            <option value="CNPJ">CNPJ</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="btn-primary w-full" id="searchBtn">
+                            🔍 Buscar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 pt-2">
+                    <label class="flex items-center gap-2 text-sm text-gray-400">
+                        <input type="checkbox" id="sourceGoogle" checked class="rounded bg-gray-700 border-gray-600" />
+                        Google Dorks
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-400">
+                        <input type="checkbox" id="sourcePortal" checked class="rounded bg-gray-700 border-gray-600" />
+                        Portal Transparência
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-400">
+                        <input type="checkbox" id="sourceBNMP" checked class="rounded bg-gray-700 border-gray-600" />
+                        BNMP/CNJ
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-400">
+                        <input type="checkbox" id="sourceSocial" checked class="rounded bg-gray-700 border-gray-600" />
+                        Redes Sociais
+                    </label>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Results Section (Hidden by default) -->
+        <div id="resultsSection" class="hidden">
+            <!-- Risk Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card">
+                    <div id="riskLevel" class="text-3xl font-bold text-white mb-1">--</div>
+                    <div class="text-sm text-blue-100">Nível de Risco</div>
+                </div>
+                <div class="stat-card">
+                    <div id="riskScore" class="text-3xl font-bold text-white mb-1">--</div>
+                    <div class="text-sm text-blue-100">Score (0-100)</div>
+                </div>
+                <div class="stat-card">
+                    <div id="totalFindings" class="text-3xl font-bold text-white mb-1">0</div>
+                    <div class="text-sm text-blue-100">Total Achados</div>
+                </div>
+                <div class="stat-card">
+                    <div id="criticalFindings" class="text-3xl font-bold text-white mb-1">--</div>
+                    <div class="text-sm text-blue-100">Achados Críticos</div>
+                </div>
+            </div>
+            
+            <!-- Findings and Graph -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Findings List -->
+                <div class="lg:col-span-2 card p-6">
+                    <h3 class="text-lg font-semibold text-white mb-4">📋 Achados Detalhados</h3>
+                    <div id="findingsList">
+                        <!-- Findings will be inserted here -->
+                    </div>
+                </div>
+                
+                <!-- Graph Visualization -->
+                <div class="card p-6">
+                    <h3 class="text-lg font-semibold text-white mb-4">🕸️ Grafo de Relacionamentos</h3>
+                    <div class="graph-container">
+                        <div class="text-center">
+                            <p class="mb-2">🔗 Visualização de conexões</p>
+                            <p class="text-sm">Os relacionamentos entre entidades serão exibidos aqui</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <button class="btn-primary text-sm py-2 flex-1">Exportar JSON</button>
+                        <button class="btn-primary text-sm py-2 flex-1">Exportar GEXF</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Risk Indicators -->
+            <div class="card p-6 mb-8">
+                <h3 class="text-lg font-semibold text-white mb-4">⚠️ Indicadores de Risco</h3>
+                <div id="riskIndicators" class="space-y-2">
+                    <!-- Indicators will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Sources Status -->
+            <div class="card p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">🔗 Fontes Consultadas</h3>
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-left text-gray-400 border-b border-gray-700">
+                            <th class="pb-3 font-medium">Fonte</th>
+                            <th class="pb-3 font-medium">Status</th>
+                            <th class="pb-3 font-medium">Achados</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sourcesTable">
+                        <!-- Sources will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden text-center py-16">
+            <div class="loading-spinner mb-4"></div>
+            <p class="text-gray-400">Realizando busca em múltiplas fontes...</p>
+            <p class="text-sm text-gray-500 mt-2">Isso pode levar alguns segundos</p>
+        </div>
+    </main>
+    
+    <script>
+        const searchForm = document.getElementById('searchForm');
+        const resultsSection = document.getElementById('resultsSection');
+        const loadingState = document.getElementById('loadingState');
+        
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const query = document.getElementById('queryInput').value;
+            const queryType = document.getElementById('queryType').value;
+            
+            // Build sources list
+            const sources = [];
+            if (document.getElementById('sourceGoogle').checked) sources.push('google_dorks');
+            if (document.getElementById('sourcePortal').checked) sources.push('portal_transparencia');
+            if (document.getElementById('sourceBNMP').checked) sources.push('bnmp');
+            if (document.getElementById('sourceSocial').checked) sources.push('social_media');
+            
+            // Show loading
+            resultsSection.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            
+            try {
+                const response = await fetch('/api/v1/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Operator-ID': 'OP-001',
+                        'X-Operator-Name': 'Operador Teste',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        query_type: queryType === 'AUTO' ? null : queryType,
+                        sources: sources.length > 0 ? sources : null,
+                        include_details: true,
+                    }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erro na requisição');
+                }
+                
+                const data = await response.json();
+                
+                // Hide loading, show results
+                loadingState.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+                
+                // Update UI with results
+                updateResultsUI(data);
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                loadingState.classList.add('hidden');
+                alert('Erro ao realizar busca. Tente novamente.');
+            }
+        });
+        
+        function updateResultsUI(data) {
+            const summary = data.summary || {};
+            
+            // Update stats
+            document.getElementById('riskLevel').textContent = summary.risk_level || 'UNKNOWN';
+            document.getElementById('riskLevel').className = `text-3xl font-bold text-white mb-1 risk-badge risk-${summary.risk_level?.toLowerCase() || 'unknown'}`;
+            
+            document.getElementById('riskScore').textContent = (summary.risk_score || 0).toFixed(1);
+            document.getElementById('totalFindings').textContent = summary.total_findings || 0;
+            document.getElementById('criticalFindings').textContent = summary.has_critical_findings ? 'SIM' : 'NÃO';
+            
+            // Update findings list
+            const findingsList = document.getElementById('findingsList');
+            const findings = data.results?.google_dorks?.findings || [];
+            
+            if (findings.length === 0) {
+                findingsList.innerHTML = '<p class="text-gray-400">Nenhum achado detalhado disponível.</p>';
+            } else {
+                findingsList.innerHTML = findings.map(finding => `
+                    <div class="finding-card ${finding.relevance?.toLowerCase() || ''}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong class="text-white">${finding.type || 'Desconhecido'}</strong>
+                            <span class="text-xs text-gray-400">${finding.source || ''}</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-1">Relevância: ${(finding.relevance || 'LOW').toUpperCase()}</p>
+                    </div>
+                `).join('');
+            }
+            
+            // Update risk indicators
+            const riskIndicators = document.getElementById('riskIndicators');
+            const indicators = summary.risk_indicators || [];
+            
+            if (indicators.length === 0) {
+                riskIndicators.innerHTML = '<p class="text-gray-400">Nenhum indicador de risco identificado.</p>';
+            } else {
+                riskIndicators.innerHTML = indicators.map(ind => `
+                    <div class="bg-gray-700 px-4 py-2 rounded text-sm">⚠️ ${ind}</div>
+                `).join('');
+            }
+            
+            // Update sources table
+            const sourcesTable = document.getElementById('sourcesTable');
+            const sourcesConsulted = data.sources_consulted || [];
+            const sourcesWithErrors = data.sources_with_errors || [];
+            
+            sourcesTable.innerHTML = sourcesConsulted.map(source => {
+                const status = sourcesWithErrors.includes(source) 
+                    ? '<span class="text-red-500">❌ ERRO</span>' 
+                    : '<span class="text-green-500">✅ SUCESSO</span>';
+                const sourceName = source.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                return `
+                    <tr class="border-b border-gray-700">
+                        <td class="py-3 text-white">${sourceName}</td>
+                        <td>${status}</td>
+                        <td class="text-gray-400">-</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
